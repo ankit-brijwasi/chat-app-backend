@@ -1,85 +1,56 @@
 import json
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
-from .models import Message
+
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
+from django.core.serializers import serialize
+
+from .models import Message
 
 
-class ChatConsumer(WebsocketConsumer):
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        if not self.scope["user"].is_authenticated:
+            # close the websocket if the user is not authenticated
+            await self.close(code=401)
+        self.user = self.scope["user"]
+        self.room_name = self.scope['url_route'].get('kwargs').get('room_name')
+        self.room_group_name = f"chat_{self.room_name}"
 
-    def fetch_messages(self, data):
-        messages = Message.recent_messages(self)
-        content = {
-            'messages': self.serialize_to_json(messages)
-        }
-        self.send_message(content)
+        # Joining the group
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
 
-    def send_message(self, data):
-        author = data['from']
-        author_user = User.objects.get(username=author)
+    async def disconnect(self, code):
+        # Leave the group
+        await self.channel_layer.group_discard(
+            self.room_group_name, self.channel_name)
+
+    @database_sync_to_async
+    def save_message(self, data):
+        '''saves message to database and returns a serialized object'''
         message = Message.objects.create(
-            author=author_user, message=data['message'])
-        content = {
-            'command': 'new_message',
-            'message': self.get_json_data(message)
-        }
-        return self.send_chat_message(content)
+            author=self.user, message=data.get('message'))
+        return {'author': message.author.username, 'message': message.message, 'sent_on': str(message.sent_on)}
 
-    def serialize_to_json(self, messages):
-        return [self.get_json_data(message) for message in messages]
+    async def receive(self, text_data=None, bytes_data=None):
+        '''recieve method will recieve the data from the client
+           and then send it to the group, after which the message
+           will be pushed to all the connected channels in that group'''
 
-    def get_json_data(self, message):
-        return {
-            'author': message.author.username,
-            'message': message.message,
-            'sent_on': str(message.sent_on),
-        }
-
-    commands = {
-        'fetch_messages': fetch_messages,
-        'send_message': send_message,
-    }
-
-    def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
-
-        # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
-
-        self.accept()
-
-    def disconnect(self, close_code):
-        # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
-            self.channel_name
-        )
-
-    # Receive message from WebSocket
-    def receive(self, text_data):
         data = json.loads(text_data)
-        self.commands[data['commands']](self, data)
+        message = await self.save_message(data)
 
-    def send_chat_message(self, data):
-        message = data['message']
-
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
+        await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'chat_message',
+                'type': 'chat_message',  # <-- function
+                # <-- arguments, these will be recieved as event
                 'message': message
             }
         )
 
-    def send_message(self, message):
-        self.send(text_data=json.dumps(message))
+    async def chat_message(self, event):
+        message = event.get('message')
 
-    # Receive message from room group
-    def chat_message(self, event):
-        message = event['message']
-        self.send(text_data=json.dumps(message))
+        await self.send(text_data=json.dumps({'data': message}))
