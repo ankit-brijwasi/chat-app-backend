@@ -12,7 +12,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         if not self.scope["user"].is_authenticated:
             # close the websocket if the user is not authenticated
-            await self.close(code=401)
+            await self.close()
         self.user = self.scope["user"]
         self.room_name = self.scope['url_route'].get('kwargs').get('room_name')
         self.room_group_name = f"chat_{self.room_name}"
@@ -31,7 +31,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         '''saves message to database and returns a serialized object'''
         message = Message.objects.create(
             author=self.user, message=data.get('message'))
-        return {'author': message.author.username, 'message': message.message, 'sent_on': str(message.sent_on)}
+        return {
+            'author': {
+                'username': message.author.username,
+                'first_name': message.author.first_name,
+                'last_name': message.author.last_name
+            },
+            'message': message.message,
+            'sent_on': str(message.sent_on)
+        }
 
     async def receive(self, text_data=None, bytes_data=None):
         '''recieve method will recieve the data from the client

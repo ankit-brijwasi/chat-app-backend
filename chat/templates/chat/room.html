@@ -29,7 +29,7 @@
       }
       .chat-container {
         height: 530px;
-        width: 530px;
+        width: 650px;
         position: relative;
         background-color: #32385f;
         padding: 0px 0px 5px 0px;
@@ -54,13 +54,17 @@
         display: flex;
         flex-flow: row wrap;
       }
+      .author {
+        margin: 0;
+        font-weight: bold;
+      }
       .message-recieved::before {
         display: inline-block;
         position: absolute;
         top: 0;
         width: 0;
         height: 0;
-        margin-left: -1.86em;
+        margin-left: -1.7em;
         content: "";
         border: 6.2px solid transparent;
         border-right-color: #222;
@@ -83,24 +87,26 @@
         color: #fff;
         padding: 3px 8px;
         font-family: monospace;
-        font-size: small;
+        font-size: medium;
         margin-bottom: 10px;
-        max-width: 198px;
+        max-width: 250px;
         position: relative;
         word-wrap: break-word;
       }
       .message-sent {
-        margin-right: 14px;
+        min-width: 120px;
+        margin-right: 18px;
         background-color: teal;
       }
       .message-recieved {
-        margin-left: 10px;
+        min-width: 140px;
+        margin-left: 14px;
         background-color: #222;
       }
       .time {
         text-align: right;
-        margin: 5px 0px 0px 0px;
-        font-size: smaller;
+        margin: 0px 0px 0px 0px;
+        font-size: x-small;
       }
     </style>
   </head>
@@ -123,18 +129,25 @@
                 background-color: #c2c2c2;
               "
             />
-            <span class="brand-logo" style="font-size: 20px; flex-grow: 1"
-              >Ankit Brijwasi
+            <span class="brand-logo" style="font-size: 20px; flex-grow: 1">
+              {{ room_name }}
             </span>
-            <ul class="right" style="margin-right: 15px; cursor: pointer">
-              <li><i class="material-icons">power_settings_new</i></li>
+            <ul class="right" style="margin-right: 15px">
+              <li style="margin-right: 20px">
+                <i class="material-icons" style="cursor: pointer">info</i>
+              </li>
+              <li>
+                <i class="material-icons" style="cursor: pointer"
+                  >power_settings_new</i
+                >
+              </li>
             </ul>
           </div>
         </nav>
       </div>
       <div class="messages-box" id="messages">
-        <!-- <textarea id="chat-log" style="display: none"></textarea> -->
         <br />
+        <div class="flex" style="justify-content: flex-start"></div>
       </div>
       <div class="send-message">
         <div class="flex">
@@ -179,6 +192,7 @@
       const msgContainer = document.createElement("div");
       const recieved = document.createElement("div");
       const p = document.createElement("p");
+      const pAuthor = document.createElement("p");
 
       const message = document.createTextNode(response.data.message);
       const timeStamp = document.createTextNode(
@@ -186,9 +200,14 @@
       );
 
       msgContainer.classList.add("flex");
-      if (response.data.author !== currentUser) {
+      if (response.data.author.username !== currentUser) {
+        pAuthor.classList.add("author");
+        pAuthor.appendChild(
+          document.createTextNode(response.data.author.username)
+        );
         msgContainer.style.justifyContent = "flex-start";
         recieved.classList.add("message-recieved");
+        recieved.appendChild(pAuthor);
       } else {
         msgContainer.style.justifyContent = "flex-end";
         recieved.classList.add("message-sent");
