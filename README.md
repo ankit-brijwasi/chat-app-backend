@@ -15,5 +15,5 @@ This is it and you are ready to go!!
 
 ## Branches-
 
-1. `master` --> production branch.
-2. `code` --> development branch.
+1. `production` --> production branch.
+2. `development` --> development branch.
