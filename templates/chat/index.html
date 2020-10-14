@@ -13,6 +13,7 @@
 <!-- scripts -->
 {% block scripts %}
 <script>
+  document.title = "Chat app";
   document.querySelector("#room-name-input").focus();
   document.querySelector("#room-name-input").onkeyup = function (e) {
     if (e.keyCode === 13) {

@@ -1,26 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <title>Chat app - Logout</title>
-  </head>
-  <body>
-    <h3>You have been Logged out</h3>
-    <small class="text-muted"
-      ><a href="{% url 'login' %}">Log In</a> again</small
-    >
-  </body>
-</html>
+{% extends "base.html" %}
+<!-- Content -->
+{% block content %}
+<div
+  class="card"
+  style="
+    background-color: transparent;
+    max-width: 340px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  "
+>
+  <div class="card-content white-text">
+    <span class="card-title">You have been Logged out</span>
+    <p style="font-size: small">
+      Thanks for using us! You can login back to you account
+      <a href="{% url 'login' %}">here</a>.
+    </p>
+  </div>
+  <div class="card-action">
+    <a href="{% url 'home' %}">Back to Home</a>
+  </div>
+</div>
+
+{% endblock content %}

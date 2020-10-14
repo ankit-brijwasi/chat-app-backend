@@ -1,4 +1,118 @@
+:root {
+  --error: #ee413e;
+  --success: #26a69a;
+  --light: rgb(248, 242, 242);
+  --mb-0: 0 !important;
+  --mb-n1: -0.835rem !important;
+  --mb-1: 1.31rem !important;
+  --mb-2: 2.31rem !important;
+  --mt-1: 1.31rem !important;
+}
+
+input {
+  color: var(--light);
+}
+
 html {
-  background-color: #242542;
+  background-color: #444;
   font-family: "Roboto", sans-serif;
+}
+
+.toggle-dark-theme {
+  position: absolute;
+}
+
+.text-light {
+  color: var(--light);
+}
+
+.fw-600 {
+  font-weight: 600 !important;
+}
+
+.mb-0 {
+  margin-bottom: var(--mb-0);
+}
+
+.mb-n1 {
+  margin-bottom: var(--mb-n1);
+}
+
+.mb-1 {
+  margin-bottom: var(--mb-1);
+}
+
+.mb-2 {
+  margin-bottom: var(--mb-2);
+}
+
+.mt-1 {
+  margin-top: var(--mt-1);
+}
+
+.w-75 {
+  width: 75%;
+}
+
+.flex-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.img-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column wrap;
+  width: 100%;
+  overflow: hidden;
+  min-height: 100vh;
+  object-fit: contain;
+}
+
+.auth-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column wrap;
+  width: 100%;
+  overflow: hidden;
+  border-left: 1px solid #b9b9b9;
+  min-height: 100vh;
+}
+.auth-form {
+  width: 100%;
+}
+
+.fieldset {
+  border-radius: 0;
+  border: none;
+}
+
+.caption {
+  font-weight: bold;
+  text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+.toast-danger,
+.toast-success {
+  max-width: 350px;
+  word-wrap: break-word;
+  padding: 10px;
+  font-size: small;
+  font-weight: 600;
+}
+
+.toast-danger {
+  color: #fff;
+  background-color: var(--error);
+}
+
+.toast-success {
+  color: #fff;
+  background-color: var(--success);
 }

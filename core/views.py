@@ -16,5 +16,4 @@ def register(request):
             return redirect("login")
     else:
         form = forms.RegistrationForm()
-
     return render(request, "core/signup.html", {'form': form})

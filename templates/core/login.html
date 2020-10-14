@@ -1,38 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <title>Chat app - Login</title>
-  </head>
-  <body>
-    <form method="post">
-      <fieldset>
-        {% csrf_token %}
-        <legend>Login to your account</legend>
-        {% if messages %}
-        <ul>
-          {% for message in messages %}
-          <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-        <div>{{ form }}</div>
-        <button type="submit">Login</button>
-        <p>Not registerd yet ? <a href="{% url 'register' %}">Sign up</a></p>
-      </fieldset>
-    </form>
-  </body>
-</html>
+{% extends 'base.html' %} {% load static %}
+<!-- Content -->
+{% block content %}
+<div class="row" style="margin-bottom: 0">
+  <div class="col s12 m6" style="position: relative">
+    <img src="{% static 'img/login.png' %}" class="img-center" alt="login" />
+  </div>
+  <div class="col s12 m6">
+    <div class="auth-form-container">
+      <form method="post" class="auth-form" autocomplete="off">
+        <fieldset class="fieldset">
+          {% csrf_token %}
+          <h4 class="text-light caption mb-n1">Login to your account</h4>
+          <p class="text-light mb-2">
+            Not registerd yet ?
+            <a
+              href="{% url 'register' %}"
+              class="teal-text text-lighten-3 text-accent-4 fw-600"
+              >Sign up</a
+            >
+          </p>
+
+          <!-- form fields -->
+          <div class="input-field">
+            <i class="material-icons prefix">account_circle</i>
+            {{ form.username }}
+            <label for="id_username">Username</label>
+          </div>
+          <div class="input-field">
+            <i class="material-icons prefix">lock</i>
+            {{ form.password }}
+            <label for="id_password">Password</label>
+          </div>
+          <!-- ./form fields -->
+
+          <div class="flex-box">
+            <button type="submit" class="waves-effect waves-light btn">
+              Login
+            </button>
+            <a href="#" class="teal-text text-lighten-3 text-accent-4 fw-600">
+              Forgot Password?
+            </a>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+<!-- ./Content -->
+
+<!-- Scripts -->
+{% block scripts %}
+<script>
+  document.title = "Chat app - Login";
+  const label1 = document.querySelectorAll("label")[0];
+  const label2 = document.querySelectorAll("label")[1];
+  label1.innerHTML = label1.innerHTML.replace(":", "");
+  label2.innerHTML = label2.innerHTML.replace(":", "");
+
+  const errors = `{{form.non_field_errors}}`;
+  const messages = `{% if messages %} true {% else %} false {% endif %}`;
+
+  if (Boolean(errors)) {
+    const input1 = document.getElementById("id_username");
+    const input2 = document.getElementById("id_password");
+    M.toast({
+      html: errors,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+
+    label1.style.color = "var(--error)";
+    label2.style.color = "var(--error)";
+
+    input1.style.borderBottom = "1px solid var(--error)";
+    input1.style.boxShadow = "0 1px 0 0 var(--error)";
+
+    input2.style.borderBottom = "1px solid var(--error)";
+    input2.style.boxShadow = "0 1px 0 0 var(--error)";
+
+    document.getElementsByClassName("prefix")[0].style.color = "var(--error)";
+    document.getElementsByClassName("prefix")[1].style.color = "var(--error)";
+  }
+
+  if (JSON.parse(messages)) {
+    M.toast({
+      html: `
+          <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          `,
+      classes: "toast-success",
+      displayLength: 5000,
+    });
+  }
+</script>
+{% endblock scripts %}
+<!-- ./Scripts -->
