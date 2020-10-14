@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+<!-- Content -->
+{% block content %}
+<div
+  class="card"
+  style="
+    background-color: transparent;
+    max-width: 340px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  "
+>
+  <div class="card-content white-text">
+    <span class="card-title">You have been Logged out</span>
+    <p style="font-size: small">
+      Thanks for using us! You can login back to you account
+      <a href="{% url 'login' %}">here</a>.
+    </p>
+  </div>
+  <div class="card-action">
+    <a href="{% url 'home' %}">Back to Home</a>
+  </div>
+</div>
+
+{% endblock content %}

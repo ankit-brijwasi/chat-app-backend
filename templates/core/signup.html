@@ -1,0 +1,233 @@
+{% extends 'base.html' %} {% load static %}
+<!-- Content -->
+{% block content %}
+<style>
+  .row {
+    margin-bottom: 0px;
+  }
+</style>
+<div class="row" style="margin-bottom: 0">
+  <div class="col s12 m6" style="position: relative">
+    <img
+      src="{% static 'img/signup.png' %}"
+      class="img-center"
+      alt="login"
+      style="max-width: 605px; margin: auto"
+    />
+  </div>
+  <div class="col s12 m6">
+    {{ form.non_field_errors }}
+
+    <div class="auth-form-container">
+      <form method="post" class="auth-form" autocomplete="off">
+        <fieldset class="fieldset">
+          {% csrf_token %}
+          <h4 class="text-light caption mb-n1">Create a new account</h4>
+          <p class="text-light mb-2">
+            Already registerd ?
+            <a
+              href="{% url 'login' %}"
+              class="teal-text text-lighten-3 text-accent-4 fw-600"
+            >
+              Sign in
+            </a>
+          </p>
+
+          <div class="row">
+            <div class="input-field col s6">
+              {{ form.username }}
+              <!-- label -->
+              <label for="{{ form.username.id_for_label }}">Username</label>
+              <!-- helper text -->
+              {% if form.username.help_text %}
+              <span class="helper-text grey-text text-lighten-2">
+                {{ form.username.help_text }}
+              </span>
+              {% endif %}
+              <!-- ./helper text -->
+            </div>
+            <div class="input-field col s6">
+              {{ form.email }}
+              <!-- label -->
+              <label for="{{ form.email.id_for_label }}">Email</label>
+              <!-- helper text -->
+              {% if form.email.help_text %}
+              <span class="helper-text grey-text text-lighten-2">
+                {{ form.email.help_text }}
+              </span>
+              {% endif %}
+              <!-- ./helper text -->
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s6">
+              {{ form.first_name }}
+              <!-- label -->
+              <label for="{{ form.first_name.id_for_label }}">First name</label>
+              <!-- helper text -->
+              {% if form.first_name.help_text %}
+              <span class="helper-text grey-text text-lighten-2">
+                {{ form.first_name.help_text }}
+              </span>
+              {% endif %}
+              <!-- ./helper text -->
+            </div>
+            <div class="input-field col s6">
+              {{ form.last_name }}
+              <!-- label -->
+              <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+              <!-- helper text -->
+              {% if form.last_name.help_text %}
+              <span class="helper-text grey-text text-lighten-2">
+                {{ form.last_name.help_text }}
+              </span>
+              {% endif %}
+              <!-- ./helper text -->
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              {{ form.password1 }}
+              <!-- label -->
+              <label for="{{ form.password1.id_for_label }}">Password</label>
+              <!-- helper text -->
+              {% if form.password1.help_text %}
+              <span class="helper-text grey-text text-lighten-2">
+                {{ form.password1.help_text }}
+              </span>
+              {% endif %}
+              <!-- ./helper text -->
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              {{ form.password2 }}
+              <!-- label -->
+              <label for="{{ form.password2.id_for_label }}">
+                Confirm Password
+              </label>
+              <!-- helper text -->
+              {% if form.password2.help_text %}
+              <span class="helper-text grey-text text-lighten-2">
+                {{ form.password2.help_text }}
+              </span>
+              {% endif %}
+              <!-- ./helper text -->
+            </div>
+          </div>
+
+          <div class="flex-box">
+            <button type="submit" class="waves-effect waves-light btn">
+              Sign Up
+            </button>
+          </div>
+          <p
+            class="helper-text grey-text text-lighten-2"
+            style="font-size: 12px; margin-top: 10px"
+          >
+            By clicking Sign Up you agree to our policies
+          </p>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+<!-- ./Content -->
+
+<!-- Scripts -->
+{% block scripts %}
+<script>
+  document.title = "Chat app - Register";
+  const userNameError = `{{ form.username.errors }}`;
+  const emailError = `{{ form.email.errors }}`;
+  const password1 = `{{ form.password1.errors }}`;
+  const password2 = `{{ form.password2.errors }}`;
+  const firstName = `{{ form.first_name.errors }}`;
+  const lastName = `{{ form.last_name.errors }}`;
+
+  if (Boolean(userNameError)) {
+    const input = document.getElementById("id_username");
+    const label = document.querySelectorAll("label")[0];
+    M.toast({
+      html: userNameError,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+    label.style.color = "var(--error)";
+    input.style.borderBottom = "1px solid var(--error)";
+    input.style.boxShadow = "0 1px 0 0 var(--error)";
+  }
+  if (Boolean(emailError)) {
+    const input = document.getElementById("id_email");
+    const label = document.querySelectorAll("label")[1];
+
+    M.toast({
+      html: emailError,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+    label.style.color = "var(--error)";
+    input.style.borderBottom = "1px solid var(--error)";
+    input.style.boxShadow = "0 1px 0 0 var(--error)";
+  }
+  if (Boolean(firstName)) {
+    const input = document.getElementById("id_first_name");
+    const label = document.querySelectorAll("label")[2];
+
+    M.toast({
+      html: firstName,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+    label.style.color = "var(--error)";
+    input.style.borderBottom = "1px solid var(--error)";
+    input.style.boxShadow = "0 1px 0 0 var(--error)";
+  }
+  if (Boolean(lastName)) {
+    const input = document.getElementById("id_last_name");
+    const label = document.querySelectorAll("label")[3];
+
+    M.toast({
+      html: lastName,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+    label.style.color = "var(--error)";
+    input.style.borderBottom = "1px solid var(--error)";
+    input.style.boxShadow = "0 1px 0 0 var(--error)";
+  }
+  if (Boolean(password1)) {
+    const input = document.getElementById("id_password1");
+    const label = document.querySelectorAll("label")[4];
+
+    M.toast({
+      html: password1,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+    label.style.color = "var(--error)";
+    input.style.borderBottom = "1px solid var(--error)";
+    input.style.boxShadow = "0 1px 0 0 var(--error)";
+  }
+
+  if (Boolean(password2)) {
+    const input = document.getElementById("id_password2");
+    const label = document.querySelectorAll("label")[5];
+
+    M.toast({
+      html: password2,
+      classes: "toast-danger",
+      displayLength: 5000,
+    });
+    label.style.color = "var(--error)";
+    input.style.boxShadow = "0 1px 0 0 var(--error)";
+    input.style.borderBottom = "1px solid var(--error)";
+  }
+</script>
+{% endblock scripts %}
+<!-- ./Scripts -->
