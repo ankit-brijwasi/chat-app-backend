@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+from .models import Room
 
 
 @login_required
 def index(request):
-    return render(request, 'chat/index.html')
+    rooms = Room.objects.filter(~Q(admins__username=request.user.username))
+    return render(request, 'chat/index.html', {'rooms': rooms})
 
 
 @login_required

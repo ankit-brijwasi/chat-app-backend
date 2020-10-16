@@ -1,0 +1,135 @@
+<div
+  class="card"
+  style="
+    background-color: transparent;
+    width: 515px;
+    height: 400px;
+    overflow: auto;
+  "
+>
+  <style>
+    th {
+      position: sticky;
+      top: 0px;
+    }
+    th:nth-child(1),
+    th:nth-child(2),
+    th:nth-child(3) {
+      border-right: 1.4px solid #c2c2c2;
+    }
+    tbody > tr {
+      border-bottom: 1.4px solid #c2c2c2;
+    }
+    td:nth-child(1),
+    td:nth-child(2) {
+      max-width: 80px;
+      min-width: 80px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 1.4px solid #c2c2c2;
+    }
+    td:nth-child(3),
+    td:nth-child(4) {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    td:nth-child(3) {
+      max-width: 15px;
+      min-width: 15px;
+      border-right: 1.4px solid #c2c2c2;
+    }
+    td:nth-child(4) {
+      max-width: 55px;
+      min-width: 55px;
+    }
+  </style>
+  <div class="card-title teal text-light fw-500" style="padding: 10px 24px">
+    My Rooms
+  </div>
+  <table class="text-light responsive-table" style="position: relative">
+    <thead>
+      <tr>
+        <th style="background-color: #222">Name</th>
+        <th style="background-color: #222">Slug</th>
+        <th style="background-color: #222">Members</th>
+        <th style="background-color: #222">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>BCA</td>
+        <td>bca</td>
+        <td>60</td>
+        <td>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            edit
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            delete
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            share
+          </i>
+        </td>
+      </tr>
+      <tr>
+        <td>BCA</td>
+        <td>bca</td>
+        <td>60</td>
+        <td>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            edit
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            delete
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            share
+          </i>
+        </td>
+      </tr>
+      <tr>
+        <td>BCA</td>
+        <td>bca</td>
+        <td>60</td>
+        <td>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            edit
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            delete
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            share
+          </i>
+        </td>
+      </tr>
+      <tr>
+        <td>BCA</td>
+        <td>bca</td>
+        <td>60</td>
+        <td>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            edit
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            delete
+          </i>
+          <i class="material-icons" style="font-size: 15px; margin-right: 8px">
+            share
+          </i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- scripts -->
+{% block scripts %}
+<script>
+  // websocket code here
+</script>
+{% endblock scripts %}
+<!-- ./scripts -->

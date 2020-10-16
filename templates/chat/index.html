@@ -1,11 +1,103 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% load static %}
 
 <!-- body -->
 {% block content %}
-<div class="content">
-  What chat room would you like to enter?<br />
-  <input id="room-name-input" type="text" size="100" /><br />
-  <input id="room-name-submit" type="button" value="Enter" />
+<!-- Navbar -->
+{% include "chat/navbar.html" %}
+<!-- ./Navbar -->
+<!-- FAB -->
+<a
+  class="btn-floating btn-large waves-effect waves-light red modal-trigger"
+  style="position: fixed; bottom: 50px; right: 60px"
+  href="#new-room"
+>
+  <i class="material-icons">add</i>
+</a>
+<!-- ./FAB -->
+<div class="px-2 pt-1">
+  <!-- New Room -->
+  <div
+    class="modal"
+    id="new-room"
+    style="background-color: #333; width: 515px; padding: 0px"
+  >
+    <div class="modal-content" style="padding: 0px">
+      <div class="card" style="background-color: transparent; box-shadow: none">
+        <div
+          class="card-title teal text-light fw-500"
+          style="padding: 10px 24px"
+        >
+          Create Room
+        </div>
+        <div class="card-content">
+          <div class="input-field">
+            <input
+              id="room-name-input"
+              type="text"
+              size="100"
+              class="validate"
+            />
+            <label for="room-name-input">Room Name</label>
+            <button
+              type="button"
+              id="room-name-submit"
+              class="waves-effect waves-light btn mt-1"
+            >
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ./New Room -->
+
+  <!-- My Rooms -->
+  <div
+    class="card"
+    style="
+      background-color: transparent;
+      width: 515px;
+      height: 400px;
+      overflow: auto;
+    "
+  >
+    <style>
+      th {
+        position: sticky;
+        top: 0px;
+      }
+    </style>
+    <div class="card-title teal text-light fw-500" style="padding: 10px 24px">
+      All Rooms
+    </div>
+    <table class="text-light responsive-table" style="position: relative">
+      <thead>
+        <tr>
+          <th style="background-color: #222; z-index: 2">Name</th>
+          <th style="background-color: #222; z-index: 2">Members</th>
+          <th style="background-color: #222; z-index: 2">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="all-rooms">
+        {% for room in rooms %}
+        <tr id="row{{forloop.counter}}">
+          <td>{{ room.name }}</td>
+          <td>{{ room.members.count }}</td>
+          <td>
+            <button
+              onclick="joinRoom('{{room.slug}}', this, document.getElementById('row{{forloop.counter}}'))"
+              class="btn teal waves-effect waves-light"
+            >
+              join
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <!-- ./My Rooms -->
 </div>
 {% endblock content %}
 <!-- ./body -->
@@ -14,7 +106,16 @@
 {% block scripts %}
 <script>
   document.title = "Chat app";
-  document.querySelector("#room-name-input").focus();
+  const currentUser = "{{user.username}}";
+  document.addEventListener("DOMContentLoaded", function () {
+    var elems = document.querySelectorAll(".modal");
+    var instances = M.Modal.init(elems);
+  });
+  let gBtn = null;
+  let gTr = null;
+</script>
+<script src="{% static 'js/reconnecting-websocket.js' %}"></script>
+<script>
   document.querySelector("#room-name-input").onkeyup = function (e) {
     if (e.keyCode === 13) {
       // enter, return
@@ -22,10 +123,115 @@
     }
   };
 
+  const roomSocket = new ReconnectingWebSocket(
+    "ws://" + window.location.host + "/ws/rooms/"
+  );
+
+  getElement = (id) => document.getElementById(id);
+
+  getElement("username").innerHTML = currentUser;
+
+  // send join room request
+  function joinRoom(slug, btn, tableRow) {
+    btn.disabled = true;
+    roomSocket.send(
+      JSON.stringify({
+        action: "join_room_request",
+        slug: slug,
+      })
+    );
+    gBtn = btn;
+    gTr = tableRow;
+  }
+
+  function join_room_request(response, btn, tr) {
+    if (response.type === "join_room_request") {
+      if (btn && tr) {
+        btn.disabled = false;
+        tr.style.opacity = "0";
+        tr.style.transition = "1s ease";
+
+        setTimeout(
+          () => document.getElementById("all-rooms").removeChild(tr),
+          1100
+        );
+      }
+
+      response.room.admins.forEach((user) => {
+        if (user.username === currentUser) {
+          M.toast({
+            html:
+              response.join_req_user +
+              " has requested to join " +
+              response.room.name,
+            classes: "teal white-text",
+            displayLength: 8000,
+          });
+        }
+      });
+    }
+  }
+
+  function generateRows(rows, id) {
+    const tbody = getElement(id);
+    rows.forEach((row) => {
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("td");
+      const td2 = document.createElement("td");
+      const td3 = document.createElement("td");
+      const btn = document.createElement("button");
+
+      btn.classList.add("btn", "teal", "waves-effect", "waves-light");
+      btn.append("join");
+
+      btn.addEventListener("click", () => joinRoom(row.slug, btn, tr));
+
+      td1.append(row.name);
+      td2.append(row.members.length);
+      td3.append(btn);
+
+      tr.append(td1, td2, td3);
+      tbody.append(tr);
+    });
+  }
+
+  function emptyInnerHTML(selector) {
+    document.getElementById(selector).innerHTML = "";
+  }
+</script>
+
+<script>
+  // Recieve message from the socket
+  roomSocket.onmessage = function (event) {
+    const response = JSON.parse(event.data);
+    if (response.type === "add_room") {
+      generateRows([response.room], "all-rooms");
+    }
+    if (response.type === "join_room_request") {
+      join_room_request(response, gBtn, gTr);
+    }
+  };
+
+  // create new room
   document.querySelector("#room-name-submit").onclick = function (e) {
-    let roomName = document.querySelector("#room-name-input").value;
-    roomName = roomName.trim().replace(/\s/g, "-");
-    window.location.pathname = "/chat/" + roomName + "/";
+    let roomName = document.querySelector("#room-name-input");
+    if (roomName.value.length <= 0) {
+      M.toast({
+        html: "Please enter a room name",
+        classes: "toast-danger",
+        displayLength: 2000,
+      });
+      return;
+    }
+    // roomName = roomName.trim().replace(/\s/g, "-");
+    roomSocket.send(
+      JSON.stringify({
+        name: roomName.value,
+        action: "add_room",
+      })
+    );
+    roomName.value = "";
+    // window.location.pathname = "/chat/" + roomName + "/";
   };
 </script>
 {% endblock scripts %}
