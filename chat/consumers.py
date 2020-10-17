@@ -31,6 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, data):
         '''saves message to database and returns a serialized object'''
+        print(self.room_name)
         message = Message.objects.create(
             author=self.user, message=data.get('message'), room=Room.objects.get(slug=self.room_name))
 

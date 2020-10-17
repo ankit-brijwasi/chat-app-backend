@@ -24,7 +24,8 @@ def room(request, room_name):
         Q(members=request.user) | Q(admins=request.user)))
     messages = Message.objects.filter(room=room).order_by('sent_on')
     return render(request, 'chat/room.html', {
-        'room_name': room.name,
+        'room_name': room_name,
+        'room': room,
         'username': request.user.username,
         'chats': messages
     })

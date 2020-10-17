@@ -1,6 +1,11 @@
 const roomName = getRoomName();
 const currentUser = getCurrentUser();
 
+const messagesContainer = document.getElementById("messages");
+if (messagesContainer.scrollHeight > 400) {
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 const chatSocket = new ReconnectingWebSocket(
   "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
 );
@@ -59,6 +64,9 @@ chatSocket.onmessage = function (e) {
   recieved.appendChild(p);
   msgContainer.appendChild(recieved);
   msgBox.appendChild(msgContainer);
+  if (msgBox.scrollHeight > 400) {
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
 };
 
 chatSocket.onclose = function (e) {
