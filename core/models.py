@@ -23,16 +23,22 @@ def create_profile(sender, **kwargs):
 
 @receiver(user_logged_in)
 def user_online(sender, user, request, **kwargs):
-    user.profile.online = True
-    user.profile.save()
+    profile = Profile.objects.get(user=user)
+    profile.online = True
+    profile.save()
+
+    # user.profile.online = True
+    # user.save()
 
 
-@receiver(user_logged_in)
+@receiver(user_logged_out)
 def user_offline(sender, user, request, **kwargs):
-    user.profile.online = False
-    user.profile.save()
+    profile = Profile.objects.get(user=user)
+    profile.online = False
+    profile.save()
+
+    # user.profile.online = False
+    # user.save()
 
 
 post_save.connect(create_profile, sender=User)
-# user_logged_in(user_online, sender=User)
-# user_logged_out(user_offline, sender=User)

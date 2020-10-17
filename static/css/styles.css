@@ -156,3 +156,13 @@ html {
   color: #fff;
   background-color: var(--success);
 }
+
+.tiny-icon {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 15px;
+}
+
+.online {
+  color: rgb(116, 236, 116);
+}

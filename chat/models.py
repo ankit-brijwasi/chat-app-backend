@@ -35,8 +35,8 @@ class Room(models.Model):
 class Message(models.Model):
     author = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name="author_messages")
-    # room = models.ForeignKey(
-    #     to=User, default="", on_delete=models.CASCADE, related_name="room_messages")
+    room = models.ForeignKey(
+        to=Room, default=40, on_delete=models.CASCADE, related_name="room_messages")
     message = models.TextField()
     sent_on = models.DateTimeField(auto_now_add=True)
 

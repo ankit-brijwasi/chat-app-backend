@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.forms import model_to_dict
 
 from .models import Message, Room
-from .serializers import RoomSerializer, MessageSerializer
+from .serializers import RoomSerializer, MessageSerializer, UserSerializer
 from core.models import Profile
 
 
@@ -32,7 +32,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, data):
         '''saves message to database and returns a serialized object'''
         message = Message.objects.create(
-            author=self.user, message=data.get('message'))
+            author=self.user, message=data.get('message'), room=Room.objects.get(slug=self.room_name))
 
         serializer = MessageSerializer(message, many=False)
         return serializer.data
@@ -94,11 +94,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def join_room_req(self, data):
         '''adds the current user request to join a room'''
+        # for now add anyone directly to the room
         room = get_object_or_404(Room, slug=data.get('slug'))
         room.join_requests.add(self.user)
+        room.members.add(self.user)
         room.save()
         serializer = RoomSerializer(room, many=False)
         return serializer.data, self.user.username
+
+    @database_sync_to_async
+    def online_users(self):
+        '''Returns all the online users'''
+        users = User.objects.filter(profile__online=True)
+        serializer = UserSerializer(users, many=True)
+        return serializer.data
 
     async def receive(self, text_data=None):
         data = json.loads(text_data)
@@ -126,6 +135,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+        if data.get('action') == "fetch_online_users":
+            users = await self.online_users()
+
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'get_online_users',
+                    'users': users
+                }
+            )
+
     async def new_room(self, event):
         room = event.get('room')
         await self.send(text_data=json.dumps({'room': room, 'type': 'add_room'}))
@@ -134,3 +154,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room = event.get('room')
         join_req_user = event.get('join_req_user')
         await self.send(text_data=json.dumps({'room': room, 'join_req_user': join_req_user, 'type': 'join_room_request'}))
+
+    async def get_online_users(self, event):
+        users = event.get('users')
+        await self.send(text_data=json.dumps({'type': 'fetch_online_users', 'users': users}))

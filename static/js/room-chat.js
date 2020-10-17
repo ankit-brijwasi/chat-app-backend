@@ -12,10 +12,32 @@ chatSocket.onmessage = function (e) {
   const recieved = document.createElement("div");
   const p = document.createElement("p");
   const pAuthor = document.createElement("p");
+  const date = new Date(response.data.sent_on);
+
+  const months = [
+    "Jan.",
+    "Feb.",
+    "Mar.",
+    "Apr.",
+    "May",
+    "Jun.",
+    "Jul.",
+    "Aug.",
+    "Sep.",
+    "Oct.",
+    "Nov.",
+    "Dec.",
+  ];
 
   const message = document.createTextNode(response.data.message);
   const timeStamp = document.createTextNode(
-    new Date(response.data.sent_on).toDateString()
+    months[date.getMonth()] +
+      " " +
+      date.getDate() +
+      ", " +
+      date.getHours() +
+      ":" +
+      date.getSeconds()
   );
 
   msgContainer.classList.add("flex");
