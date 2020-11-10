@@ -26,11 +26,13 @@
             "
           />
           <span class="brand-logo" style="font-size: 20px; flex-grow: 1">
-            {{ room_name }}
+            {{ room.name }}
           </span>
           <ul class="right" style="margin-right: 15px">
             <li style="margin-right: 20px">
-              <i class="material-icons" style="cursor: pointer">info</i>
+              <a href="{% url 'home' %}">
+                <i class="material-icons" style="cursor: pointer">home</i>
+              </a>
             </li>
             <li>
               <a
@@ -46,6 +48,29 @@
     </div>
     <div class="messages-box" id="messages">
       <br />
+      {% for chat in chats %}
+      <!-- Chats -->
+      {% if not chat.author.username == user.username %}
+      <div class="flex" style="justify-content: flex-start">
+        <div class="message-recieved">
+          <p class="author">{{chat.author.username}}</p>
+          {{chat.message}}
+          <p class="time">{{chat.sent_on|date:"N d, H:i"}}</p>
+        </div>
+      </div>
+
+      {% else %}
+
+      <div class="flex" style="justify-content: flex-end">
+        <div class="message-sent">
+          {{ chat.message }}
+          <p class="time">{{chat.sent_on|date:"N d, H:i"}}</p>
+        </div>
+      </div>
+
+      {% endif %}
+      <!-- ./Chats -->
+      {% endfor %}
     </div>
     <div class="send-message">
       <div class="flex">
@@ -76,7 +101,7 @@
 <script>
   const getRoomName = () => "{{ room_name }}";
   const getCurrentUser = () => "{{ username }}";
-  document.title = getRoomName();
+  document.title = "{{room.name}}";
 
   document.addEventListener("DOMContentLoaded", function () {
     var elems = document.querySelectorAll(".btn-floating");

@@ -1,6 +1,11 @@
 const roomName = getRoomName();
 const currentUser = getCurrentUser();
 
+const messagesContainer = document.getElementById("messages");
+if (messagesContainer.scrollHeight > 400) {
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 const chatSocket = new ReconnectingWebSocket(
   "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
 );
@@ -12,10 +17,32 @@ chatSocket.onmessage = function (e) {
   const recieved = document.createElement("div");
   const p = document.createElement("p");
   const pAuthor = document.createElement("p");
+  const date = new Date(response.data.sent_on);
+
+  const months = [
+    "Jan.",
+    "Feb.",
+    "Mar.",
+    "Apr.",
+    "May",
+    "Jun.",
+    "Jul.",
+    "Aug.",
+    "Sep.",
+    "Oct.",
+    "Nov.",
+    "Dec.",
+  ];
 
   const message = document.createTextNode(response.data.message);
   const timeStamp = document.createTextNode(
-    new Date(response.data.sent_on).toDateString()
+    months[date.getMonth()] +
+      " " +
+      date.getDate() +
+      ", " +
+      date.getHours() +
+      ":" +
+      date.getSeconds()
   );
 
   msgContainer.classList.add("flex");
@@ -37,6 +64,9 @@ chatSocket.onmessage = function (e) {
   recieved.appendChild(p);
   msgContainer.appendChild(recieved);
   msgBox.appendChild(msgContainer);
+  if (msgBox.scrollHeight > 400) {
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
 };
 
 chatSocket.onclose = function (e) {
